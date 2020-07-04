@@ -77,8 +77,6 @@ resource "aws_cloudfront_distribution" "main_dist" {
       restriction_type = "none"
     }
   }
-
-  depends_on = [aws_s3_bucket.website]
 }
 
 #AWS Route53 (DNS records)
@@ -98,8 +96,6 @@ resource "aws_route53_record" "main-a-record" {
     zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
     evaluate_target_health = false
   }
-
-  depends_on = [aws_cloudfront_distribution.main_dist]
 }
 
 # Create Route53 "AAAA" record for covid19 web
@@ -113,7 +109,6 @@ resource "aws_route53_record" "main-aaaa-record" {
     zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
     evaluate_target_health = false
   }
-  depends_on = [aws_cloudfront_distribution.main_dist]
 }
 
 #AWS IAM
@@ -147,22 +142,44 @@ EOF
 }
 
 #AWS Lambda (Serverless)
+# Generate Lambda zip file.
+data "archive_file" "scrape_data" {
+  type        = "zip"
+  source_file = "${path.module}/src/lambdas/lambda_function.py"
+  output_path = "${path.module}/src/lambdas/lambda.zip"
+}
+
+# Prepare Python requirements for Lambda layer. 
+resource "null_resource" "prep_python" {
+  provisioner "local-exec" {
+    working_dir = "${path.module}/src/"
+    command     = "make"
+  }
+}
+
+# Generate Lambda layer zip file,
+data "archive_file" "python" {
+  type        = "zip"
+  source_dir  = "${path.module}/src/python"
+  output_path = "${path.module}/src/python.zip"
+
+  depends_on = [null_resource.prep_python]
+}
+
 # Create Lambda layer for COVID19 app.
 resource "aws_lambda_layer_version" "covid_layer" {
   layer_name          = "covid-scraper-with-pandas-layer"
-  filename            = "../src/python.zip"
+  filename            = data.archive_file.python.output_path
   compatible_runtimes = ["python3.8"]
 }
 
 # Create Lambda function that scrapes COVID19 data to S3.
 resource "aws_lambda_function" "covid_lambda_function" {
   function_name = "covid19-lambda-scraper"
-  filename      = "../src/lambda.zip"
+  filename      = data.archive_file.scrape_data.output_path
   handler       = "lambda_handler"
   role          = aws_iam_role.covid_lambda_s3_role.arn
   runtime       = "python3.8"
-
-  depends_on = [aws_iam_role.covid_lambda_s3_role]
 }
 
 #AWS CloudWatch (Log/Monitor/Schedule)
