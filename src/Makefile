@@ -14,7 +14,7 @@ install:
 
 zip: install clean-env
 	@echo "Zipping the Python layer for Lambda."
-	zip -Z=bzip2 -qr "${PYTHON}.zip" "${PYTHON}"
+	zip -qr "${PYTHON}.zip" "${PYTHON}"
 
 clean-env:
 	@echo "Cleaning python cache."
