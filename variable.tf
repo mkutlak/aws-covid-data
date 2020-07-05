@@ -10,6 +10,7 @@ variable "aws_credentials_file" {
 variable "aws_credentials_profile" {
   description = "Profile selected in credentials file."
   default     = "mkutlak"
+  type        = string
 }
 
 variable "domain_name" {
