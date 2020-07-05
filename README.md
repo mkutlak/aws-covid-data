@@ -8,6 +8,10 @@ Create necessary resources to deploy serverless COVID19 scraper.
 
 Creates S3 bucket, CDN, DNS records, IAM policies, Lambda functions.
 
+<p align="center">
+<img src="https://github.com/mkutlak/aws-covid-data/blob/diagrams/diagrams/covid19_scraper_web_app.png" height="480">
+</p>
+
 ### Usage
 Initiate Terraform:
 ```bash
