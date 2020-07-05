@@ -1,4 +1,7 @@
 # Terraform automation for COVID19 scraper
+### learning project
+
+![Terraform](https://github.com/mkutlak/aws-covid-data/workflows/Terraform/badge.svg)
 
 ### Description
 Create necessary resources to deploy serverless COVID19 scraper.
