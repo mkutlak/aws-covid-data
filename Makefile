@@ -10,6 +10,10 @@ $(SUBDIR):
 all: validate
 .PHONY: all
 
+init:
+	@echo "Initializing Terraform."
+	@terraform init
+
 validate:
 	@echo "Validating Terraform"
 	@terraform validate

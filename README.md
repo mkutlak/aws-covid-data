@@ -6,6 +6,11 @@ Create necessary resources to deploy serverless COVID19 scraper.
 Creates S3 bucket, CDN, DNS records, IAM policies, Lambda functions.
 
 ### Usage
+Initiate Terraform:
+```bash
+make init
+```
+
 To plan the deployment:
 ```bash
 $ make
