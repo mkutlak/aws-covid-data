@@ -1,0 +1,7 @@
+.terraform
+
+*.tfstate
+*.tfstate.*
+
+src/python
+src/*.zip
