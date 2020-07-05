@@ -30,20 +30,33 @@ Pulls COVID-19 data from the current day and filters data by COUNTRY (default 'C
 """
 
 import pandas as pd
+import dominate
+from dominate import tags
+from dominate.util import raw
 from datetime import datetime as dt
 from datetime import timedelta
+from pathlib import Path
 from urllib.parse import urljoin
 from urllib.error import HTTPError
 
-COLUMN_FILTER='Country_Region'
+# Bootstrap resources
+BS_CSS_LINK=r'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css'
+BS_JQ_LINK=r'https://code.jquery.com/jquery-3.5.1.slim.min.js'
+BS_POP_LINK=r'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'
+BS_BS_LINK=r'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js'
+
+# Date
 DATE_FORMAT='%m-%d-%Y'
 DATE_TODAY=dt.today().strftime(DATE_FORMAT)
 DATE_YESTERDAY=(dt.today()-timedelta(days=1)).strftime(DATE_FORMAT)
+
+# Table operation
+COLUMN_FILTER='Country_Region'
 DEFAULT_COUNTRY='Czechia'
 GH_COVID_RAW=r'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'
 
 
-def pull_todays_covid_data():
+def get_covid_data():
     """
     Pulls COVID data (in CSV) from today from the referenced GH repo,
     filters by country (by default 'Czechia') and returns pandas.DataFrame.
@@ -56,14 +69,71 @@ def pull_todays_covid_data():
 
     try:
         todays_data = pd.read_csv(csv_url)
-        todays_data = todays_data[todays_data[COLUMN_FILTER] == DEFAULT_COUNTRY]
     except HTTPError as ex:
         if ex.code == 404:
             print(f"COVID data for {DATE_YESTERDAY} are not available.")
         else:
             raise ex
 
-    # Save to CSV file
-    # todays_data.to_csv(todays_filename)
-
     return todays_filename, todays_data
+
+
+def filter_by_country(data, country=DEFAULT_COUNTRY):
+    """
+    Filter provided data by country (defaults to Czechia).
+
+    data: pandas.DataFrame
+    country: str
+    """
+    # Filter data by COUNTRY
+    return data[data[COLUMN_FILTER] == country]
+    
+
+def update_csv(orig_csv, new_data):
+    """
+    Updates CSV file with new data and returns the updated data.
+
+    orig_csv: path to CSV
+    new_data: pandas.DataFrame
+    """
+    origin = pd.read_csv(orig_csv)
+    new_record = filter_by_country(new_data)
+    origin.append(new_record, ignore_index=True)
+    # Drop all duplicated records
+    origin.drop_duplicates(keep=False, inplace=True)
+    origin.to_csv(orig_csv)
+
+    return origin
+
+
+def create_index(data, out):
+    """
+    Return a web page with a table representing of provided data.
+
+    out file is created if it doesn't exist.
+
+    data: pandas.DataFrame
+    out: path to file for index.html
+    """
+    css_classes = 'table table-sm table-striped table-hover table-borderless text-center'
+    table = data.to_html(classes=css_classes, 
+                         index=False, # do not display indexes
+                         border=0, # remove table border
+                         na_rep="-") # represent empty cels with '-'
+
+    page = dominate.document(title="COVID-19")
+
+    with page.head:
+        tags.link(rel="stylesheet", href=BS_CSS_LINK)
+        tags.script(rel="text/javascript", href=BS_JQ_LINK)
+        tags.script(rel="text/javascript", href=BS_POP_LINK)
+        tags.script(rel="text/javascript", href=BS_BS_LINK)
+
+    with page:
+        with tags.div():
+            raw(table)
+
+    index = Path(out)
+    index.touch(exist_ok=True)
+    with index.open("w") as fd:
+        fd.write(page.render())
