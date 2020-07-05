@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "Main AWS region."
-  default = "eu-central-1"
+  default     = "eu-central-1"
 }
 
 variable "aws_credentials_file" {
