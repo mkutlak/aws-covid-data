@@ -8,21 +8,17 @@ Creates S3 bucket, CDN, DNS records, IAM policies, Lambda functions.
 ### Usage
 To plan the deployment:
 ```bash
-$ cd ../src ; make
-$ cd -
-$ terraform plan
+$ make
+$ make plan
 ```
 
 To deploy the serverless app:
 ```bash
-$ cd ../src ; make
-$ cd -
-$ terraform apply 
+$ make
+$ make apply
 ```
 
 To destroy the app:
 ```bash
-$ terrafrom destroy
-$ cd ../src ; make clean
-$ cd - 
+$ make destroy
 ```

@@ -1,25 +1,26 @@
-LAMBDA_SCRIPT=lambda_function.py
 PYTHON_SCRIPT=covid_scraper.py
-LAMBDA=lambda
 PYTHON=python
+RQS=requirements.txt
 
-all: install clean-env zip zip-lambda
+all: install clean-env zip
 .PHONY: all
 
 install:
-	mkdir -p ${PYTHON}
-	cp ${PYTHON_SCRIPT} ${PYTHON}
-	pip3 install -It ${PYTHON} -r ./requirements.txt
+	@echo "Installing Python for Lambda layer."
+	@mkdir -p "${PYTHON}"
+	@cp "${PYTHON_SCRIPT}" "${PYTHON}"
+	@echo "Requirements:" && cat "./${RQS}" ; echo
+	pip3 install -Iq -t "${PYTHON}" -r "./${RQS}"
 
 zip: install clean-env
-	zip -r "${PYTHON}.zip" ${PYTHON}
-
-zip-lambda:
-	zip -r "${LAMBDA}.zip" ${LAMBDA_SCRIPT}
+	@echo "Zipping the Python layer for Lambda."
+	zip -Z=bzip2 -qr "${PYTHON}.zip" "${PYTHON}"
 
 clean-env:
-	rm --recursive --force "./${PYTHON}/*.dist-info"
-	rm --recursive --force "./${PYTHON}/__pycache__"
+	@echo "Cleaning python cache."
+	@rm --recursive --force "./${PYTHON}/*.dist-info" "./${PYTHON}/__pycache__"
 
 clean:
-	rm -rf ./${PYTHON} "${PYTHON}.zip" "${LAMBDA}.zip"
+	@echo "Cleaning python resources."
+	@rm -rf "./${PYTHON}" "${PYTHON}.zip"
+	@echo "Removed."
