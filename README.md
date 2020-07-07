@@ -2,6 +2,7 @@
 ### learning project
 
 ![Terraform](https://github.com/mkutlak/aws-covid-data/workflows/Terraform/badge.svg)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/mkutlak/aws-covid-data.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mkutlak/aws-covid-data/alerts/)
 
 ### Description
 Create necessary resources to deploy serverless COVID19 scraper.
