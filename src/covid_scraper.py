@@ -68,7 +68,7 @@ def get_covid_data():
     csv_url = urljoin(GH_COVID_RAW, todays_filename)
 
     try:
-        todays_data = pd.read_csv(csv_url)
+        todays_data = pd.read_csv(csv_url, index_col=0)
     except HTTPError as ex:
         if ex.code == 404:
             print(f"COVID data for {DATE_YESTERDAY} are not available.")
@@ -96,12 +96,17 @@ def update_csv(orig_csv, new_data):
     orig_csv: path to CSV
     new_data: pandas.DataFrame
     """
-    origin = pd.read_csv(orig_csv)
     new_record = filter_by_country(new_data)
-    origin.append(new_record, ignore_index=True)
-    # Drop all duplicated records
-    origin.drop_duplicates(keep=False, inplace=True)
-    origin.to_csv(orig_csv)
+    if Path(orig_csv).is_file():
+        origin = pd.read_csv(orig_csv, index_col=0)
+        origin.append(new_record, ignore_index=True)
+        # Drop all duplicated records
+        origin.drop_duplicates(keep=False, inplace=True, ignore_index=True)
+    else:
+        # Origin is empty, create a new one from new data.
+        origin = new_record
+
+    origin.to_csv(orig_csv, index=False)
 
     return origin
 
