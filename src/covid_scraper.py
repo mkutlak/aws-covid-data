@@ -30,8 +30,7 @@ Pulls COVID-19 data from the current day and filters data by COUNTRY (default 'C
 """
 
 import pandas as pd
-import dominate
-from dominate import tags
+from dominate import document, tags
 from dominate.util import raw
 from datetime import datetime as dt
 from datetime import timedelta
@@ -126,7 +125,7 @@ def create_index(data, out):
                          border=0, # remove table border
                          na_rep="-") # represent empty cels with '-'
 
-    page = dominate.document(title="COVID-19")
+    page = document(title="COVID-19")
 
     with page.head:
         tags.link(rel="stylesheet", href=BS_CSS_LINK)

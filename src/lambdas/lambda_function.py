@@ -4,7 +4,6 @@ import boto3
 import covid_scraper as cs
 from botocore.exceptions import ClientError
 from mimetypes import guess_type
-from pathlib import Path
 
 BUCKET='covid19.themkutlak.eu'
 INDEX='index.html'

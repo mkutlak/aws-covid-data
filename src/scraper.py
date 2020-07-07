@@ -28,7 +28,6 @@ Simple data scraper for covid-19 data from https://github.com/CSSEGISandData/COV
 
 Filters data by COUNTRY and DATE.
 """
-import os
 import click
 import logging
 import pandas as pd
