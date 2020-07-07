@@ -1,7 +1,8 @@
 path_classifiers:
-  - "src/*.py"
-  - "src/*/*.py"
-  - "diagrams/*.py"
+  source:
+    - "src/*.py"
+    - "src/*/*.py"
+    - "diagrams/*.py"
 extraction:
   python:
     python_setup:
