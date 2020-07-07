@@ -1,0 +1,11 @@
+path_classifiers:
+  - "src/*.py"
+  - "src/*/*.py"
+  - "diagrams/*.py"
+extraction:
+  python:
+    python_setup:
+      version: 3
+      requirements_files:
+        - src/requirements.txt
+      setup_py: false
