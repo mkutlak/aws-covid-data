@@ -207,4 +207,26 @@ JSON
 }
 
 #AWS CloudWatch (Log/Monitor/Schedule)
-#TODO: Add cron, trigger on putobject
+# Create an event rule to trigger everyday at 1:30 AM
+resource "aws_cloudwatch_event_rule" "covid_cron_everyday" {
+  name                = "covid-cron-everyday-1-30"
+  description         = "Run event everyday at 1:30 AM."
+  schedule_expression = "cron(30 1 * * ? *)"
+  is_enabled          = true
+}
+
+# Assign the created rule to Lambda function
+resource "aws_cloudwatch_event_target" "covid_lambda_target" {
+  rule      = aws_cloudwatch_event_rule.covid_cron_everyday.name
+  target_id = "run-scheduled-task-everyday-1-30"
+  arn       = aws_lambda_function.covid_lambda_function.arn
+}
+
+# Add permission for the invocation of the Lambda function
+resource "aws_lambda_permission" "covid_allow_cloudwatch_lambda" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.covid_lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.covid_cron_everyday.arn
+}
