@@ -3,7 +3,6 @@
 resource "aws_s3_bucket" "website" {
   bucket = var.website_bucket_name
   acl    = "public-read"
-
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -25,15 +24,13 @@ EOF
 }
 
 #AWS ACM
-# Get a SSL certificate 
+# Get a SSL certificate
 data "aws_acm_certificate" "main" {
   provider = aws.us_east
   domain   = var.domain_name
   statuses = ["ISSUED"]
   types    = ["AMAZON_ISSUED"]
-
 }
-
 
 #AWS CloudFront (CDN)
 # Define origin for S3
@@ -80,7 +77,7 @@ resource "aws_cloudfront_distribution" "main_dist" {
 }
 
 #AWS Route53 (DNS records)
-# Get info about hosted zone 
+# Get info about hosted zone
 data "aws_route53_zone" "main" {
   name = var.hosted_zone_domain_name
 }
@@ -171,7 +168,7 @@ data "archive_file" "scrape_data" {
   output_path = "${path.module}/src/lambdas/lambda.zip"
 }
 
-# Prepare Python requirements for Lambda layer. 
+# Prepare Python requirements for Lambda layer.
 resource "null_resource" "prep_python" {
   provisioner "local-exec" {
     working_dir = "${path.module}/src/"
