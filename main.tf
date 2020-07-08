@@ -196,7 +196,7 @@ resource "aws_lambda_layer_version" "covid_layer" {
 resource "aws_lambda_function" "covid_lambda_function" {
   function_name = "covid19-lambda-scraper"
   filename      = data.archive_file.scrape_data.output_path
-  handler       = "lambda_handler"
+  handler       = "lambda_function.lambda_handler"
   layers        = [aws_lambda_layer_version.covid_layer.arn]
   role          = aws_iam_role.covid_lambda_s3_role.arn
   runtime       = "python3.8"
