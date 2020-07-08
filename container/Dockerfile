@@ -13,7 +13,7 @@ RUN cd /usr/local/bin && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     mkdir -p /work && \
-    git clone git://github.com/mkutlak/aws-covid-data.git /work
+    git clone --single-branch --branch v0.1 git://github.com/mkutlak/aws-covid-data.git /work
 
 WORKDIR /work
 CMD ["/bin/bash"]
