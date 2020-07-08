@@ -176,20 +176,13 @@ resource "null_resource" "prep_python" {
   }
 }
 
-# Generate Lambda layer zip file,
-data "archive_file" "python" {
-  type        = "zip"
-  source_dir  = "${path.module}/src/python"
-  output_path = "${path.module}/src/python.zip"
-
-  depends_on = [null_resource.prep_python]
-}
-
 # Create Lambda layer for COVID19 app.
 resource "aws_lambda_layer_version" "covid_layer" {
   layer_name          = "covid-scraper-with-pandas-layer"
-  filename            = data.archive_file.python.output_path
+  filename            = "${path.module}/src/python.zip"
   compatible_runtimes = ["python3.8"]
+
+  depends_on = [null_resource.prep_python]
 }
 
 # Create Lambda function that scrapes COVID19 data to S3.
