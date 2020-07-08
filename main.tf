@@ -195,5 +195,15 @@ resource "aws_lambda_function" "covid_lambda_function" {
   runtime       = "python3.8"
 }
 
+# Invoke Lambda functino
+data "aws_lambda_invocation" "covid_lambda_invoke" {
+  function_name = aws_lambda_function.covid_lambda_function.function_name
+  input         = <<JSON
+{}
+JSON
+
+  depends_on = [aws_lambda_function.covid_lambda_function]
+}
+
 #AWS CloudWatch (Log/Monitor/Schedule)
 #TODO: Add cron, trigger on putobject
