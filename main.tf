@@ -1,9 +1,10 @@
 #AWS S3 (Storage)
 # Create bucket to store COVID19 data and static webapp
 resource "aws_s3_bucket" "website" {
-  bucket = var.website_bucket_name
-  acl    = "public-read"
-  policy = <<EOF
+  bucket        = var.website_bucket_name
+  acl           = "public-read"
+  force_destroy = true
+  policy        = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
