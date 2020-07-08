@@ -112,33 +112,55 @@ resource "aws_route53_record" "main-aaaa-record" {
 }
 
 #AWS IAM
-# TODO: FIX ME, policy role attaching
 # Create IAM role for Lambda function to enable working with S3
 resource "aws_iam_role" "covid_lambda_s3_role" {
-  name               = "covid-lambda-s3-role"
-  description        = "Enable Lambda function to work with S3."
+  name               = "CovidLambdaS3Role"
+  description        = "Enable Lambda functions to work with S3."
   assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# Create IAM policy for Lambda function
+resource "aws_iam_policy" "covid_lambda_policy" {
+  name        = "CovidLambdaS3Policy"
+  description = "Enable Lambda functions to work with S3."
+  policy      = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
         {
             "Effect": "Allow",
             "Action": [
-                "logs:*"
+                "cloudwatch:*",
+                "events:*",
+                "lambda:*",
+                "logs:*",
+                "s3:*"
             ],
-            "Resource": "arn:aws:logs:*:*:*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject"
-            ],
-            "Resource": "arn:aws:s3:::*"
+            "Resource": "*"
         }
     ]
 }
 EOF
+}
+
+# Attach create policy to a role.
+resource "aws_iam_role_policy_attachment" "covid_role_policy_attach" {
+  role       = aws_iam_role.covid_lambda_s3_role.name
+  policy_arn = aws_iam_policy.covid_lambda_policy.arn
 }
 
 #AWS Lambda (Serverless)
