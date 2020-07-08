@@ -100,7 +100,8 @@ def update_csv(orig_csv, new_data):
         origin = pd.read_csv(orig_csv)
         origin = origin.append(new_record, ignore_index=True)
         # Drop all duplicated records
-        origin.drop_duplicates(keep=False, inplace=True, ignore_index=True)
+        origin.drop_duplicates(keep='first', inplace=True, ignore_index=True,
+                               subset=['Country_Region', 'Last_Update', 'Confirmed', 'Recovered'])
     else:
         # Origin is empty, create a new one from new data.
         origin = new_record
