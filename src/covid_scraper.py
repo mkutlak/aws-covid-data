@@ -97,8 +97,8 @@ def update_csv(orig_csv, new_data):
     """
     new_record = filter_by_country(new_data)
     if Path(orig_csv).is_file():
-        origin = pd.read_csv(orig_csv, index_col=0)
-        origin.append(new_record, ignore_index=True)
+        origin = pd.read_csv(orig_csv)
+        origin = origin.append(new_record, ignore_index=True)
         # Drop all duplicated records
         origin.drop_duplicates(keep=False, inplace=True, ignore_index=True)
     else:
