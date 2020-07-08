@@ -16,6 +16,7 @@ init:
 
 validate:
 	@echo "Validating Terraform"
+	@terraform fmt --check
 	@terraform validate
 
 plan: validate
