@@ -1,6 +1,5 @@
 TARGETS=all clean
-SUBDIR=src \
-	   diagrams
+SUBDIR=src
 
 ${TARGETS}: ${SUBDIR}
 $(SUBDIR):
