@@ -200,7 +200,9 @@ resource "aws_lambda_function" "covid_lambda_function" {
 data "aws_lambda_invocation" "covid_lambda_invoke" {
   function_name = aws_lambda_function.covid_lambda_function.function_name
   input         = <<JSON
-{}
+{
+  "S3Bucket" : ${var.website_bucket_name}
+}
 JSON
 
   depends_on = [aws_lambda_function.covid_lambda_function]
@@ -220,6 +222,11 @@ resource "aws_cloudwatch_event_target" "covid_lambda_target" {
   rule      = aws_cloudwatch_event_rule.covid_cron_everyday.name
   target_id = "run-scheduled-task-everyday-1-30"
   arn       = aws_lambda_function.covid_lambda_function.arn
+  input     = <<JSON
+{
+  "S3Bucket" : ${var.website_bucket_name}
+}
+JSON
 }
 
 # Add permission for the invocation of the Lambda function

@@ -19,6 +19,7 @@ variable "domain_name" {
 }
 
 variable "website_bucket_name" {
+  description = "Bucket space for website."
   default = "covid19.themkutlak.eu"
   type    = string
 }
