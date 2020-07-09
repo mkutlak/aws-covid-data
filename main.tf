@@ -24,90 +24,90 @@ EOF
   }
 }
 
-#AWS ACM
+# AWS ACM
 # Get a SSL certificate
-data "aws_acm_certificate" "main" {
-  provider = aws.us_east
-  domain   = var.domain_name
-  statuses = ["ISSUED"]
-  types    = ["AMAZON_ISSUED"]
-}
-
-#AWS CloudFront (CDN)
+# data "aws_acm_certificate" "main" {
+#   provider = aws.us_east
+#   domain   = var.domain_name
+#   statuses = ["ISSUED"]
+#   types    = ["AMAZON_ISSUED"]
+# }
+#
+# AWS CloudFront (CDN)
 # Define origin for S3
-locals {
-  s3_origin_id = "s3-covid-website"
-}
-
+# locals {
+#   s3_origin_id = "s3-covid-website"
+# }
+# 
 # Create CF distribution
-resource "aws_cloudfront_distribution" "main_dist" {
-  origin {
-    domain_name = aws_s3_bucket.website.bucket_domain_name
-    origin_id   = local.s3_origin_id
-  }
-
-  enabled             = true
-  is_ipv6_enabled     = true
-  default_root_object = "index.html"
-
-  aliases = [var.website_bucket_name]
-
-  viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.main.arn
-    ssl_support_method  = "sni-only"
-  }
-
-  default_cache_behavior {
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = local.s3_origin_id
-    viewer_protocol_policy = "allow-all"
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
-  }
-
-  restrictions {
-    geo_restriction {
-      restriction_type = "none"
-    }
-  }
-}
-
-#AWS Route53 (DNS records)
+# resource "aws_cloudfront_distribution" "main_dist" {
+#   origin {
+#     domain_name = aws_s3_bucket.website.bucket_domain_name
+#     origin_id   = local.s3_origin_id
+#   }
+# 
+#   enabled             = true
+#   is_ipv6_enabled     = true
+#   default_root_object = "index.html"
+# 
+#   aliases = [var.website_bucket_name]
+# 
+#   viewer_certificate {
+#     acm_certificate_arn = data.aws_acm_certificate.main.arn
+#     ssl_support_method  = "sni-only"
+#   }
+# 
+#   default_cache_behavior {
+#     allowed_methods        = ["GET", "HEAD"]
+#     cached_methods         = ["GET", "HEAD"]
+#     target_origin_id       = local.s3_origin_id
+#     viewer_protocol_policy = "allow-all"
+#     forwarded_values {
+#       query_string = false
+#       cookies {
+#         forward = "none"
+#       }
+#     }
+#   }
+# 
+#   restrictions {
+#     geo_restriction {
+#       restriction_type = "none"
+#     }
+#   }
+# }
+# 
+# AWS Route53 (DNS records)
 # Get info about hosted zone
-data "aws_route53_zone" "main" {
-  name = var.hosted_zone_domain_name
-}
-
+# data "aws_route53_zone" "main" {
+#   name = var.hosted_zone_domain_name
+# }
+# 
 # Create Route53 "A" record for covid19 web
-resource "aws_route53_record" "main-a-record" {
-  zone_id = data.aws_route53_zone.main.zone_id
-  name    = "covid19.${data.aws_route53_zone.main.name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_cloudfront_distribution.main_dist.domain_name
-    zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
+# resource "aws_route53_record" "main-a-record" {
+#   zone_id = data.aws_route53_zone.main.zone_id
+#   name    = "covid19.${data.aws_route53_zone.main.name}"
+#   type    = "A"
+# 
+#   alias {
+#     name                   = aws_cloudfront_distribution.main_dist.domain_name
+#     zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
+#     evaluate_target_health = false
+#   }
+# }
+# 
 # Create Route53 "AAAA" record for covid19 web
-resource "aws_route53_record" "main-aaaa-record" {
-  zone_id = data.aws_route53_zone.main.zone_id
-  name    = "covid19.${data.aws_route53_zone.main.name}"
-  type    = "AAAA"
-
-  alias {
-    name                   = aws_cloudfront_distribution.main_dist.domain_name
-    zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
+# resource "aws_route53_record" "main-aaaa-record" {
+#   zone_id = data.aws_route53_zone.main.zone_id
+#   name    = "covid19.${data.aws_route53_zone.main.name}"
+#   type    = "AAAA"
+# 
+#   alias {
+#     name                   = aws_cloudfront_distribution.main_dist.domain_name
+#     zone_id                = aws_cloudfront_distribution.main_dist.hosted_zone_id
+#     evaluate_target_health = false
+#   }
+# }
 
 #AWS IAM
 # Create IAM role for Lambda function to enable working with S3
@@ -201,7 +201,7 @@ data "aws_lambda_invocation" "covid_lambda_invoke" {
   function_name = aws_lambda_function.covid_lambda_function.function_name
   input         = <<JSON
 {
-  "S3Bucket" : ${var.website_bucket_name}
+  "S3Bucket" : "${var.website_bucket_name}"
 }
 JSON
 
@@ -224,7 +224,7 @@ resource "aws_cloudwatch_event_target" "covid_lambda_target" {
   arn       = aws_lambda_function.covid_lambda_function.arn
   input     = <<JSON
 {
-  "S3Bucket" : ${var.website_bucket_name}
+  "S3Bucket" : "${var.website_bucket_name}"
 }
 JSON
 }

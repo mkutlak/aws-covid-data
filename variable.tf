@@ -9,8 +9,7 @@ variable "aws_credentials_file" {
 }
 
 variable "aws_credentials_profile" {
-  description = "Profile selected in credentials file."
-  default     = "mkutlak"
+  description = "Profile name to select in credentials file."
   type        = string
 }
 

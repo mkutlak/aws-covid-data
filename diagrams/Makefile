@@ -7,3 +7,5 @@ diagram:
 	@echo "Creating diagram of the project."
 	@python3 "${FILE}"
 	@echo "Done."
+
+clean:

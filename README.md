@@ -4,8 +4,6 @@
 ![Terraform](https://github.com/mkutlak/aws-covid-data/workflows/Terraform/badge.svg)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mkutlak/aws-covid-data.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mkutlak/aws-covid-data/alerts/)
 
-!! **Requires** Amazon provided **certificate** and **Route53 hosted zone** already created!
-
 ### Description
 Create necessary resources to deploy "Serverless" COVID19 scraper.
 
@@ -35,28 +33,8 @@ variable "website_bucket_name" {
 }
 ```
 
-#### CloudFront distribution
-This is a **little extra** bit that could be skipped but I wanted to make use of my SSl certificate to provide secure connection to the website.
-
-#### Route53 DNS records
-The records make the web available through custom link (`covid19.themkutlak.eu`).
-
-You can change the domain name with `domain_name` and `hosted_zone_domain_name` in `variable.tf`.
-```
-variable "domain_name" {
-  default = "themkutlak.eu"
-  type    = string
-}
-
-variable "hosted_zone_domain_name" {
-  description = "Route53 hosted zone."
-  default     = "themkutlak.eu."
-  type        = string
-}
-```
-
 #### IAM policy
-The IAM policy defines permissions for Lambda function. 
+The IAM policy defines permissions for Lambda function.
 
 The Lambda function requires permission to `read`, `write` and `list` objects in S3.
 
