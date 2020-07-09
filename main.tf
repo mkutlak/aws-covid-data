@@ -209,17 +209,17 @@ JSON
 }
 
 #AWS CloudWatch (Log/Monitor/Schedule)
-# Create an event rule to trigger everyday at 1:30 AM
-resource "aws_cloudwatch_event_rule" "covid_cron_everyday" {
-  name                = "covid-cron-everyday-1-30"
-  description         = "Run event everyday at 1:30 AM."
-  schedule_expression = "cron(30 1 * * ? *)"
+# Create an event rule to trigger at custom time (configurable in variable.tf)
+resource "aws_cloudwatch_event_rule" "covid_cron_custom" {
+  name                = "covid-cron-custom-time"
+  description         = "Run event everyday at ${var.cron_schedule}."
+  schedule_expression = var.cron_schedule
   is_enabled          = true
 }
 
 # Assign the created rule to Lambda function
 resource "aws_cloudwatch_event_target" "covid_lambda_target" {
-  rule      = aws_cloudwatch_event_rule.covid_cron_everyday.name
+  rule      = aws_cloudwatch_event_rule.covid_cron_custom.name
   target_id = "run-scheduled-task-everyday-1-30"
   arn       = aws_lambda_function.covid_lambda_function.arn
   input     = <<JSON
@@ -235,5 +235,5 @@ resource "aws_lambda_permission" "covid_allow_cloudwatch_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.covid_lambda_function.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.covid_cron_everyday.arn
+  source_arn    = aws_cloudwatch_event_rule.covid_cron_custom.arn
 }
