@@ -1,5 +1,6 @@
 TARGETS=all clean
 SUBDIR=src
+TERRAFORM=.terraform
 
 ${TARGETS}: ${SUBDIR}
 $(SUBDIR):
@@ -9,11 +10,13 @@ $(SUBDIR):
 all: validate
 .PHONY: all
 
-init:
+${TERRAFORM}:
 	@echo "Initializing Terraform."
 	@terraform init
 
-validate:
+init: ${TERRAFORM}
+
+validate: init
 	@echo "Validating Terraform"
 	@terraform fmt --check
 	@terraform validate
@@ -35,3 +38,4 @@ confirm:
 
 clean:
 	@echo "Cleaning Terraform deployment."
+	rm -rf "./${TERRAFORM}"
