@@ -4,12 +4,23 @@
 ![Terraform](https://github.com/mkutlak/aws-covid-data/workflows/Terraform/badge.svg)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mkutlak/aws-covid-data.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mkutlak/aws-covid-data/alerts/)
 
+### AWS Credentials
+Terrafrom asks you for **path** to AWS credentials stored in a file and your **profile name**.
+```
+[YOUR_PROFILE_NAME]
+region=YOUR_REGION
+aws_access_key_id=YOUR_SECRET_KEY_ID
+aws_secret_access_key=YOUR_SECRET_ACCESS_KEY
+```
+
 ### Description
 Create necessary resources to deploy "Serverless" COVID19 scraper.
 
 <p align="center">
 <img src="https://github.com/mkutlak/aws-covid-data/blob/master/diagrams/covid19_scraper_web_app.png" height="480">
 </p>
+
+
 
 Creates the following resources:
 #### S3 Bucket
