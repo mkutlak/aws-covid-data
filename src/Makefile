@@ -1,20 +1,23 @@
 PYTHON_SCRIPT=covid_scraper.py
 PYTHON=python
+ZIP_FILE=${PYTHON}.zip
 RQS=requirements.txt
 
-all: install clean-env zip
+all: zip
 .PHONY: all
 
-install:
+${PYTHON}:
 	@echo "Installing Python for Lambda layer."
 	@mkdir -p "${PYTHON}"
 	@cp "${PYTHON_SCRIPT}" "${PYTHON}"
 	@echo "Requirements:" && cat "./${RQS}" ; echo
 	pip3 install -Iq -t "${PYTHON}" -r "./${RQS}"
 
-zip: install clean-env
+${ZIP_FILE}: ${PYTHON}
 	@echo "Zipping the Python layer for Lambda."
-	zip -qr "${PYTHON}.zip" "${PYTHON}"
+	zip -qr "${ZIP_FILE}" "${PYTHON}"
+
+zip: ${ZIP_FILE} clean-env
 
 clean-env:
 	@echo "Cleaning python cache."
@@ -22,5 +25,5 @@ clean-env:
 
 clean:
 	@echo "Cleaning python resources."
-	@rm -rf "./${PYTHON}" "${PYTHON}.zip"
+	@rm -rf "./${PYTHON}" "${ZIP_FILE}"
 	@echo "Removed."
