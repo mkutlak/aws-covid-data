@@ -201,7 +201,7 @@ data "aws_lambda_invocation" "covid_lambda_invoke" {
   function_name = aws_lambda_function.covid_lambda_function.function_name
   input         = <<JSON
 {
-  "S3Bucket" : ${var.website_bucket_name}
+  "S3Bucket" : "${var.website_bucket_name}"
 }
 JSON
 
@@ -224,7 +224,7 @@ resource "aws_cloudwatch_event_target" "covid_lambda_target" {
   arn       = aws_lambda_function.covid_lambda_function.arn
   input     = <<JSON
 {
-  "S3Bucket" : ${var.website_bucket_name}
+  "S3Bucket" : "${var.website_bucket_name}"
 }
 JSON
 }
