@@ -106,7 +106,7 @@ def update_csv(orig_csv, new_data):
         # Origin is empty, create a new one from new data.
         origin = new_record
 
-    origin.to_csv(orig_csv, index=False)
+    origin.to_csv(orig_csv)
 
     return origin
 
